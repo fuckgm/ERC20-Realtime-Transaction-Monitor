@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from transactionTypes import crowdsale, angel, transfer, team_tokens, transfer_from, deposit_token, withdraw_token, sweep
+from transactionTypes import crowdsale, angel, transfer, team_tokens, transfer_from, deposit_token, withdraw_token, sweep, approve
+from transactionTypes import add_whitelist
 from analyzeTransaction import get_method
 from helper_log import logy_unknown_txs
+from sql import open_connection, insert_unknown_tx
 
 TRANSFER_METHOD             = '0xa9059cbb'
 PUSH_ANGEL_METHOD           = '0xf28afb1e'
@@ -14,11 +16,14 @@ BUY_ICO                     = '0xc59b5562' # ICO Buying Contract
 TRANSFER_FROM               = '0x23b872dd'
 PERSONAL_WITHDRAW           = '0xbbf59a41' # Viberate ICO Buyer-Contract withdrawl
 SWEEP                       = '0x6ea056a9'
+APPROVE                     = '0x095ea7b3'
+ADD_WHITELIST               = '0xe43252d7' #Herocoin addToWhitelist
+KRAKEN_TRANSFER             = '0xf7654176'
 
 def prepareTx(tx):
     fin = {}
     """ Values from Transaction """
-    
+
     input = tx["input"]
 
     if input == "0x":   # probably crowdsale
@@ -48,8 +53,17 @@ def prepareTx(tx):
         elif method == SWEEP:
             fin = sweep(tx)
 
+        elif method == APPROVE:
+            fin = approve(tx)
+
+        elif method == ADD_WHITELIST:
+            fin = add_whitelist(tx)
+
         else:
             print "Unknown method: " + method + " @ " + tx["hash"]
             logy_unknown_txs(str(method) + ' '+ str(tx["hash"]))
+            sqlconn = open_connection()
+            insert_unknown_tx(sqlconn, tx["hash"], method, tx["ico_id"])
+            return False
 
     return fin

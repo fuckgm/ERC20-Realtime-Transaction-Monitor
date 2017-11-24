@@ -24,7 +24,6 @@ def basic(tx):
     tmp["gas_used"] = int(ret_receipt["gasUsed"],16)
     tmp["gas_limit"] = int(tx["gas"],16)
 
-
     if "status" in ret_receipt.keys():
         tmp["status"] = int(ret_receipt["status"],16)
 
@@ -43,10 +42,13 @@ def basic(tx):
                     ana_logs[data] += 1
                 else:
                     ana_logs[data] = 1
-        
-            maxi = max(ana_logs, key=ana_logs.get)
-            tmp["erc20_value"] = int(maxi,16) * WEI_TO_VIB
-            #tmp["erc20_value"] = int(logs[0]["data"],16) * WEI_TO_VIB
+            try:     
+                maxi = max(ana_logs, key=ana_logs.get)
+                tmp["erc20_value"] = int(maxi,16) * WEI_TO_VIB
+            except StandardError as StdEX:
+                print "\tHasheeee:" + tx["hash"]
+                print "\tError in Basic! " + str(StdEX)
+            
 
     tmp["success"] = transaction_succeess(tmp)
     return tmp
@@ -62,7 +64,8 @@ def transaction_succeess(fin):
 
 def get_method(input):
     if (len(input) - 8 - 2) % 64 != 0:
-        raise Exception('Data size misaligned with parse request')
+        print '\tData size misaligned with parse request'
+        print input
     return input[:10]
 
 def get_value_from_input(input):

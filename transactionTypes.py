@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from analyzeTransaction import basic, get_transaction_receipt, get_logs, get_value_from_input, get_to_address_transferFrom
+from analyzeTransaction import basic, get_transaction_receipt, get_logs, get_value_from_input, get_to_address_transferFrom, get_to_addr_from_input
 
 def crowdsale(tx):
     tmp = basic(tx)
@@ -44,12 +44,40 @@ def team_tokens(tx):
 def transfer_from(tx):
     tmp = basic(tx)
     tmp["type"] = "transfer_from"
-    tmp["erc20_from"] = tmp["erc20_to"]
+    tmp["tx_from"] = tmp["erc20_to"]
     tmp["erc20_to"] = "0x"+get_to_address_transferFrom(tx["input"])
     return tmp
 
 def sweep(tx):
     tmp = basic(tx)
     tmp["type"] = "sweep"
+    tmp["tx_to"] = get_to_addr_from_input(tx["input"])
     tmp["erc20_value"] = get_value_from_input(tx["input"])
+
+    ret_receipt = get_transaction_receipt(tx["hash"])
+    logs = get_logs(ret_receipt)
+    if logs:
+        
+        topics = ["0","0","0"]
+        for each_log in logs:
+            if len(each_log['topics']) == 4:
+                topics = each_log["topics"]    
+
+        if topics[1] == "0":
+            print "\ttopic not valid for sweep"
+        tmp["tx_from"] = "0x"+topics[1].strip("0").strip("0x")
+        tmp["erc20_to"] = "0x"+topics[2].strip("0").strip("0x")
+    return tmp
+
+def approve(tx):
+    tmp = basic(tx)
+    tmp["type"] = "approve"
+    tmp["erc20_value"] = get_value_from_input(tx["input"])
+    return tmp
+
+def add_whitelist(tx): #Herocoin 
+    tmp = basic(tx)
+    tmp["type"] = "whitelisting"
+    tmp["erc20_value"] = 0
+    tmp["whitelisted"] = get_to_addr_from_input(tx["input"])
     return tmp

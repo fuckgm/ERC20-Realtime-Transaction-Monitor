@@ -3,8 +3,16 @@
 from rpc_connector import get_blockNumber, get_transaction, get_blockByNumber
 from helper_log import logy, prettify,load_dictionary_from_json,save_dictionary_to_json
 from analyzeBlock import getFilteredTransactionsFromBlock, getTransactionsFromBlock, getBlockTimestamp
-from prepareTransaction import prepareTx
+#from prepareTransaction import prepareTx
+from Viberate import Viberate
+from Blockv import Blockv
+from RequestNetwork import RequestNetwork
+from HeroCoin import HeroCoin
 from sql import open_connection, insert_data, retrieve_contract_watchlist, check_if_hash_exists
+
+MODUL_HOLDER = {
+    1 : "Viberate.py"
+}
 
 def process_block(latest_block):
     # Retrieve Contract Addresses we want to monitor
@@ -21,15 +29,28 @@ def process_block(latest_block):
     if len(txs) > 0: # process relevant transactions
         
         for tx in txs:
-            hash = tx[u'hash']
+            tx_hash = tx[u'hash']
 
             # Skip TXs which are already in the database
-            if not check_if_hash_exists(conn, hash):
-                _tx = prepareTx(tx)
-                if _tx:
-                    _tx["ico_id"] = tx['ico_id']
-                    _tx["blockTimestamp"] = getBlockTimestamp(block)
-                    insert_data(conn, _tx)
+            if not check_if_hash_exists(conn, tx_hash):
+
+                ico_id = tx["ico_id"]
+                tx["blockTimestamp"] = getBlockTimestamp(block)
+
+                if ico_id == 1:
+                    processor = Viberate(tx)
+                elif ico_id == 4:
+                    processor = HeroCoin(tx)
+                elif ico_id == 5:
+                    processor = RequestNetwork(tx)
+                elif ico_id == 7:
+                    processor = Blockv(tx)
+
+                else:
+                    processor = False
+                
+                if processor:
+                    insert_data(conn, processor.getAnalyzedTransaction())
 
 def track_erc20(START_BLOCK):
 
@@ -75,5 +96,21 @@ def track_erc20(START_BLOCK):
 
 # Connection re-opens with every block
 conn = open_connection()
-track_erc20(4603870)
+#track_erc20(4620771)
+track_erc20(4370269) # after last Request Network transaction parsed
 
+
+
+#process_block(4568493) # vib transfer
+#process_block(4581660) #vib_transfer from
+#process_block(4576691) #vib approve
+#process_block(4240950) # vib crowdsale
+#process_block(4558637) # ed_withdraw
+#process_block(4566936)  # ed_deposit
+#process_block(4589852) # bittrex deposit /sweep
+#process_block(4240769) # push angel investment @ viberate
+#process_block(4241086) # vib team tokens
+
+#process_block(4617997) # blockv transfer
+
+#process_block(4610518)

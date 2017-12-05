@@ -10,7 +10,7 @@ def basic(tx):
     tmp["tx_from"] = tx["from"]
     tmp["hash"] = tx["hash"]
     tmp["tx_to"] = tx["to"]
-    tmp["erc20_to"] = "0x"+remove_leading_zeros(get_to_addr_from_input(tx["input"]))
+    tmp["erc20_to"] = "0x"+get_to_addr_from_input(tx["input"])
 
     eth_value = tx["value"]
     if eth_value == "0x0":
@@ -29,21 +29,17 @@ def basic(tx):
     
 def get_to_address_transferFrom(input_data):
     params = input_data[10+64:]
-    return remove_leading_zeros(params[:64])
+    params = params[:64]
+    return params[-40]
 
 def remove_leading_zeros(foo):
-    regex = r'(0*)(.*)'
-    search = re.search(regex, foo)
-    return search.group(2)
+    #regex = r'(0*)(.*)'
+    #search = re.search(regex, foo)
+    #return search.group(2)
+    return foo[-40:]
 
 def get_value_from_input(input_data):
     params = input_data[10:]
-    value = params[64:]
-    value = int(value, 16)
-    return value
-
-def get_value_from_input(input):
-    params = input[10:]
     value = params[64:]
     value = int(value, 16)
     return value

@@ -22,3 +22,8 @@ def save_dictionary_to_json(path, jsonDump):
 def load_dictionary_from_json(filename):
     with open (filename) as data_file:
         return json.load(data_file)
+
+def load_list_from_file(path):
+    with open(path) as f:
+        lines = f.read().splitlines()
+    return lines

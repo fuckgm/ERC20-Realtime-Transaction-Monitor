@@ -27,7 +27,6 @@ def get_status(receipt):
         return -1
 
 def get_info_from_topics_in_logs(_logs, index, spot):
-    prettify(_logs)
     if len(_logs) < index:
         print "get info from logs: index too big"
         return -1

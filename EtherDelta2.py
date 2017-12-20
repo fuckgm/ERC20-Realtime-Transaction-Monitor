@@ -58,12 +58,11 @@ def ed_trade(tx, ERC20_CONTRACT):
     return tmp
 
 def ed_cancel(tx, ERC20_CONTRACT):
-    print "\t\t\t\t\tcancel!!"
     tmp = basic(tx)
     tmp["type"] = "ed_cancel"
     input_data = tx["input"]
     ed = analyzeInputData(input_data)
-
+    
     if ed["tokenGet"] == ERC20_CONTRACT:
         # MSG.SENDER gives AMOUNT of TOKENGET to USER_ADDRESS
         tmp["tx_from"] = tx["from"]
@@ -90,11 +89,11 @@ def analyzeInputData(input_data):
     ed_inputs = {}
 
     splitted = [(params[i:i+64]) for i in range(0, len(params), 64)]
-    
     tokenGet = "0x" + remove_leading_zeros(splitted[0])
     amountGet = int(splitted[1],16)
     tokenGive = "0x"+ remove_leading_zeros(splitted[2])
     amountGive = int(splitted[3],16)
+    #print "amountGive: " + str(amountGive)
     addrUser = "0x"+ remove_leading_zeros(splitted[6])
     if len(splitted) == 10:
         amount = int(splitted[10],16)

@@ -65,7 +65,6 @@ class BaseModul:
     def get_method(self, input_data):
         if (len(input_data) - 8 - 2) % 64 != 0:
             print '\tData size misaligned with parse request'
-            print input_data
         return input_data[:10]
 
     # Save methods/tx_hashes to database which have no handler yet
@@ -140,7 +139,8 @@ class BaseModul:
     def is_standard_transaction(self, tx):
         input_data = tx["input"]
         if input_data == self.PAYABLE:
-            return self.payable_method(tx)
+            #return self.payable_method(tx) # Disable crowdsale transactions 
+            return False
             
         method = self.get_method(input_data)
 

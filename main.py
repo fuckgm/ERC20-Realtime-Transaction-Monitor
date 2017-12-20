@@ -3,17 +3,18 @@
 from rpc_connector import get_blockNumber, get_transaction, get_blockByNumber
 from helper_log import logy, prettify,load_dictionary_from_json,save_dictionary_to_json
 from analyzeBlock import getFilteredTransactionsFromBlock, getTransactionsFromBlock, getBlockTimestamp
-#from prepareTransaction import prepareTx
 from Viberate import Viberate
 from Blockv import Blockv
 from RequestNetwork import RequestNetwork
 from HeroCoin import HeroCoin
 from sql import open_connection, insert_data, retrieve_contract_watchlist, check_if_hash_exists
 
+from MainClass import MainClass
+
 MODUL_HOLDER = {
     1 : "Viberate.py"
 }
-
+"""
 def process_block(latest_block):
     # Retrieve Contract Addresses we want to monitor
     CONTRACT_WATCHLIST = retrieve_contract_watchlist(conn)
@@ -85,7 +86,7 @@ def track_erc20(START_BLOCK):
             latest_block += 1
             print "New Block was found: " + str(latest_block),
             process_block(latest_block)
- 
+ """
 
 """ ##################################################  """
 """ ##################################################  """
@@ -95,10 +96,12 @@ def track_erc20(START_BLOCK):
 
 
 # Connection re-opens with every block
-conn = open_connection()
+#conn = open_connection()
 #track_erc20(4620771)
-track_erc20(4370269) # after last Request Network transaction parsed
+#track_erc20(4495684) 
 
+process = MainClass()
+process.real_time_erc20_tracking(4762338)
 
 
 #process_block(4568493) # vib transfer

@@ -21,7 +21,6 @@ def basic(tx):
     ret_receipt = get_transaction_receipt(tx["hash"])
     tmp["gas_used"] = get_gas_used(ret_receipt)
     tmp["status"] = get_status(ret_receipt)
-
     tmp["gas_limit"] = get_gas_limit(tx)
     tmp["success"] = transaction_succeess(tmp)
 

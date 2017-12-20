@@ -8,7 +8,7 @@ class TemplateCoin(BaseModul.BaseModul):
 
     NAME                = "TemplateCoin"    # Name
     SYMBOL              = "007"             # Token Symbol
-    CROWDSALE_ADDRESS   = '0x'              # Contract of Crowdsale, leave '0x' if now separate contract was used
+    CROWDSALE_ADDRESS   = '0x'              # Contract of Crowdsale, leave '0x' if no separate contract was used
     ERC20_ADDRESS       = '0x'              # Address of ERC20-Contract 
 
     # 
